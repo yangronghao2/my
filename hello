@@ -25,6 +25,8 @@ Spring Boot也提供了简化版后的@RequestMapping
 @PatchMapping
 
 @ResponseBody注解支持将返回值放在response体内，而不是返回一个视图
+在springmvc里使用 @ResponseBody 可以返回JSON.
+同样的使用 @RequestBody 可以接收JSON.
 
 @ResponseBody注解直接将返回的对象输出到客户端
 如果返回字符串，直接返回
