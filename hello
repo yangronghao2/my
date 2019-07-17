@@ -1,1 +1,138 @@
 hello
+声明Bean的注解有：
+
+@Component 没有明确角色的组件
+@Service 在业务逻辑层（Service层）使用
+@Repositpry 在数据访问层（dao层）使用
+@Controller 用于标注控制层组件
+@RestController
+
+@Service用于标注业务层组件,表示定义一个bean
+@Service使用时没有传参数，Bean名称默认为当前类的类名，首字母小写
+@Service(“serviceBeanId”)或@Service(value=”serviceBeanId”)使用时传参数，使用value作为Bean名字
+
+@Repository注解用于标注数据访问组件，即DAO组件
+@Controller用于标注Web中控制层组件
+@RequestMapping注解作用在类或方法上
+@RequestMapping注解用来处理请求地址映射
+
+Spring Boot也提供了简化版后的@RequestMapping
+
+@GetMapping
+@PostMapping
+@PutMapping
+@DeleteMapping
+@PatchMapping
+
+@ResponseBody注解支持将返回值放在response体内，而不是返回一个视图
+
+@ResponseBody注解直接将返回的对象输出到客户端
+如果返回字符串，直接返回
+如果返回不是字符串，默认使用Jackson将对象序列化成JSON字符串后输出
+
+@RestController = @Controller + @ResponseBody
+@RestController注解直接将返回的对象输出到客户端
+如果返回字符串，直接返回
+如果返回不是字符串，默认使用Jackson将对象序列化成JSON字符串后输出
+
+其实，@Service、@Repository、@Component、@Controller、@RestController这5个注解的效果都是一样的，Spring会将被这5个注解标注的类加载到Spring上下文中
+
+但是在项目中，却建议你严格按照除Componen的其余几个注解的含义使用在项目中。这对分层结构的web架构很有好处
+
+
+
+
+@Autowired注解作用在构造函数、方法、方法参数、类字段以及注解上
+@Autowired注解可以实现Bean的自动注入
+2.1 @Autowired注解原理
+在Spring Boot应用启动时，Spring容器会自动装载一个org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor处理器，当容器扫扫描到@Autowired注解时，就会在IoC容器就会找相应类型的Bean，并且实现注入。
+
+2.2 @Autowired注解使用
+在Web MVC中控制层（Controller）访问的是业务层（Service），而业务层（Service）访问的是数据层（Dao）,使用@Autowired注解实现注入
+
+
+
+
+
+//UserDAO
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import entity.User;
+
+/**
+ * 添加了@Mapper注解之后这个接口在编译时会生成相应的实现类
+ * 
+ * 需要注意的是：这个接口中不可以定义同名的方法，因为会生成相同的id
+ * 也就是说这个接口是不支持重载的
+ */
+@Mapper
+public interface UserDAO {
+
+    @Select("select * from user where name = #{name}")
+    public User find(String name);
+
+    @Select("select * from user where name = #{name} and pwd = #{pwd}")
+    /**
+      * 对于多个参数来说，每个参数之前都要加上@Param注解，
+      * 要不然会找不到对应的参数进而报错
+      */
+    public User login(@Param("name")String name, @Param("pwd")String pwd);
+}
+
+
+
+
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import dao.UserDAO;
+import entity.User;
+
+public class TestCase {
+
+    @Test
+    public void testMapper() {
+        ApplicationContext ac = new ClassPathXmlApplicationContext("spring-mybatis.xml");
+        UserDAO dao = ac.getBean(UserDAO.class);
+        User u1 = dao.find("hehe");
+        User u2 = dao.login("hehe", "123");
+        System.out.println(u1.getName().equals(u2.getName()));
+    }
+}
+
+
+
+（1）方式一：使用@Mapper注解
+
+       为了让DemoMapper能够让别的类进行引用，我们可以在DemMapper类上添加@Mapper注解
+（2）方式二：使用@MapperScan注解
+
+       通过使用@MapperScan可以指定要扫描的Mapper类的包的路径
+       
+       
+       
+       
+ 1.创建一个配置类，在配置类上添加 @ComponentScan 注解。该注解默认会扫描该类所在的包下所有的配置类
+ 2.使用 ApplicationContext 的 getBeanDefinitionNames() 方法获取已经注册到容器中的 bean 的名称。
+import io.mieux.config.BeanConfig;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class App02 {
+    public static void main(String[] args) {
+        ApplicationContext applicationContext =
+                new AnnotationConfigApplicationContext(BeanConfig.class);
+
+        String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
+        for (String beanName : beanDefinitionNames) {
+            System.out.println("beanName: " + beanName);
+        }
+    }
+}
+
+
+
+问题List<User>怎么获取，userService.getUser(age)接口句柄为什么可以直接调用方法，
