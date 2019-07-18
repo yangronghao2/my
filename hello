@@ -139,4 +139,13 @@ public class App02 {
 
 
 
-问题List<User>怎么获取，userService.getUser(age)接口句柄为什么可以直接调用方法，
+spring boot已经自动实现了mybatis所有配置，直接写dao接口即可操作数据库。
+ @Mapper
+public interface MybatisDao {
+	@Select("select * from  user where id = #{id}")
+	public List<User> findById(User param);
+@Mapper：声明一个mybatis的dao接口，会被spring boot扫描到
+@Select：声明一个查询方法，相应的增删改使用@Insert @Delete@Update
+List<User>：返回集合。如果只返回一个结果，返回值是User。如果是增删改方法返回值是int
+User param：传参，#{id}就是param对象的id值
+
