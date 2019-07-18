@@ -149,3 +149,25 @@ public interface MybatisDao {
 List<User>：返回集合。如果只返回一个结果，返回值是User。如果是增删改方法返回值是int
 User param：传参，#{id}就是param对象的id值
 
+
+
+@Insert("insert into users(name, age) values(#{name}, #{age})")
+    public int add(User user);
+    
+    //使用@Delete注解指明deleteById方法要执行的SQL
+    @Delete("delete from users where id=#{id}")
+    public int deleteById(int id);
+    
+    //使用@Update注解指明update方法要执行的SQL
+    @Update("update users set name=#{name},age=#{age} where id=#{id}")
+    public int update(User user);
+    
+    //使用@Select注解指明getById方法要执行的SQL
+    @Select("select * from users where id=#{id}")
+    public User getById(int id);
+    
+    //使用@Select注解指明getAll方法要执行的SQL
+    @Select("select * from users")
+    public List<User> getAll();
+
+
