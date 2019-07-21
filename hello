@@ -15,8 +15,16 @@ hello
 @Controller用于标注Web中控制层组件
 @RequestMapping注解作用在类或方法上
 @RequestMapping注解用来处理请求地址映射
+@RequestMapping 处理请求地址映射。
+method - 指定请求的方法类型：POST/GET/DELETE/PUT 等
+value - 指定实际的请求地址
+consumes - 指定处理请求的提交内容类型，例如 Content-Type 头部设置application/json, text/html
+produces - 指定返回的内容类型
+@PathVariable URL 映射时，用于绑定请求参数到方法参数
+@RequestBody 这里注解用于读取请求体 boy 的数据，通过 HttpMessageConverter 解析绑定到对象中
 
 Spring Boot也提供了简化版后的@RequestMapping
+
 
 @GetMapping
 @PostMapping
